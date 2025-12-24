@@ -1,5 +1,6 @@
 package com.hostel.hostel_management.entity;
 
+import com.hostel.hostel_management.enums.PaymentStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -24,19 +25,23 @@ public class Booking {
     private LocalDate endDate;
     private Boolean active = true;
 
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus = PaymentStatus.PENDING;
+
 
     //Default Constructor
     public Booking(){}
 
     //Parameterized Constructor
 
-    public Booking(long id, User user, Room room, LocalDate startDate, LocalDate endDate, Boolean active) {
+    public Booking(long id, User user, Room room, LocalDate startDate, LocalDate endDate, Boolean active ,PaymentStatus paymentStatus) {
         this.id = id;
         this.user = user;
         this.room = room;
         this.startDate = startDate;
         this.endDate = endDate;
         this.active = active;
+        this.paymentStatus = paymentStatus;
     }
 
 
@@ -88,5 +93,13 @@ public class Booking {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 }
