@@ -38,7 +38,7 @@ public class UserController {
             @RequestBody ComplaintRequest request){
         return ResponseEntity.ok(userService.createComplaint(userId,request));
     }
-
+    @GetMapping("/{userId}/complaints")
     public ResponseEntity<List<ComplaintResponse>> getUserComplaints(@PathVariable Long userId){
         return ResponseEntity.ok(userService.getUserComplaint(userId));
     }
