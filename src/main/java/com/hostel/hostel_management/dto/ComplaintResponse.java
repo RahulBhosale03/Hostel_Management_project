@@ -1,25 +1,34 @@
 package com.hostel.hostel_management.dto;
 
+import com.hostel.hostel_management.enums.TicketStatus;
+
+import java.time.LocalDateTime;
+
 public class ComplaintResponse {
 
     private Long id;
     private Long userId;
     private String message;
     private String category;
-    private Boolean resolved;
+    private TicketStatus status;
+    private LocalDateTime createdAt;
 
 
     public ComplaintResponse(){}
 
-    public ComplaintResponse(Long id, Long userId, String message,
-                             String category, Boolean resolved) {
+    public ComplaintResponse(Long id,
+                             Long userId,
+                             String message,
+                             String category,
+                             TicketStatus status,
+                             LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
         this.message = message;
         this.category = category;
-        this.resolved = resolved;
+        this.status = status;
+        this.createdAt = createdAt;
     }
-
     public Long getId() {
         return id;
     }
@@ -52,11 +61,19 @@ public class ComplaintResponse {
         this.category = category;
     }
 
-    public Boolean getResolved() {
-        return resolved;
+    public TicketStatus getStatus() {
+        return status;
     }
 
-    public void setResolved(Boolean resolved) {
-        this.resolved = resolved;
+    public void setStatus(TicketStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

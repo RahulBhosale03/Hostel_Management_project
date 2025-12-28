@@ -16,6 +16,8 @@ public class Room {
 
     @Column(length = 1000)
     private String description;
+//    @Enumerated(EnumType.STRING)
+//    private RoomType roomType;
 
     //Default Constructor
 

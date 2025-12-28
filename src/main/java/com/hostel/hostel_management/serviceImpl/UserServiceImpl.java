@@ -5,6 +5,7 @@ import com.hostel.hostel_management.entity.Booking;
 import com.hostel.hostel_management.entity.Complaint;
 import com.hostel.hostel_management.entity.Room;
 import com.hostel.hostel_management.entity.User;
+import com.hostel.hostel_management.enums.TicketStatus;
 import com.hostel.hostel_management.repository.BookingRepository;
 import com.hostel.hostel_management.repository.ComplaintRepository;
 import com.hostel.hostel_management.repository.RoomRepository;
@@ -40,8 +41,11 @@ public class UserServiceImpl implements UserService {
     public List<RoomResponse> listAvailableRoom() {
         return roomRepo.findByAvailable(true).stream()
                 .map(r -> new RoomResponse(
-                        r.getId(), r.getRoomNumber(),
-                        r.getPricePerMonth(), r.isAvailable(), r.getDescription()
+                        r.getId(),
+                        r.getRoomNumber(),
+                        r.getPricePerMonth(),
+                        r.isAvailable(),
+                        r.getDescription()
                 )).collect(Collectors.toList());
     }
 
@@ -107,7 +111,7 @@ public class UserServiceImpl implements UserService {
         complaint.setUser(user);
         complaint.setMessage(request.getMessage());
         complaint.setCategory(request.getCategory());
-        complaint.setResolved(false);
+        complaint.setStatus(TicketStatus.OPEN);
 
         Complaint saved = complaintRepo.save(complaint);
 
@@ -116,7 +120,8 @@ public class UserServiceImpl implements UserService {
                 user.getId(),
                 saved.getMessage(),
                 saved.getCategory(),
-                saved.isResolved()
+                saved.getStatus(),
+                saved.getCreatedAt()
         );
     }
 
@@ -125,6 +130,8 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+
         return complaintRepo.findByUser(user)
                 .stream()
                 .map(c -> new ComplaintResponse(
@@ -132,7 +139,8 @@ public class UserServiceImpl implements UserService {
                         user.getId(),
                         c.getMessage(),
                         c.getCategory(),
-                        c.isResolved()
+                        c.getStatus(),
+                        c.getCreatedAt()   // ✅ FIX
                 ))
                 .collect(Collectors.toList());
     }

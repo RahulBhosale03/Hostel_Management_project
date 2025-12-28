@@ -1,5 +1,6 @@
 package com.hostel.hostel_management.entity;
 
+import com.hostel.hostel_management.enums.TicketStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -22,7 +23,10 @@ public class Complaint {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    private boolean resolved = false;
+//    private boolean resolved = false;
+
+    @Enumerated(EnumType.STRING)
+    private TicketStatus status = TicketStatus.OPEN;
 
     private String resolutionNote;
 
@@ -31,17 +35,13 @@ public class Complaint {
 
     //Parameterized Constructo
 
-
-    public Complaint(long id, User user, String message, String category,
-                     LocalDateTime createdAt,boolean resolved,
-                     String resolutionNote) {
-        this.id = id;
+    public Complaint(User user, String message, String category, TicketStatus status, String resolutionNote) {
         this.user = user;
         this.message = message;
         this.category = category;
-        this.createdAt = createdAt;
-        this.resolved = resolved;
+        this.status = status;
         this.resolutionNote = resolutionNote;
+        this.createdAt = LocalDateTime.now();
     }
 
     //Getters and Setters
@@ -87,12 +87,12 @@ public class Complaint {
         this.createdAt = createdAt;
     }
 
-    public boolean isResolved() {
-        return resolved;
+    public TicketStatus getStatus() {
+        return status;
     }
 
-    public void setResolved(boolean resolved) {
-        this.resolved = resolved;
+    public void setStatus(TicketStatus status) {
+        this.status = status;
     }
 
     public String getResolutionNote() {
@@ -103,3 +103,4 @@ public class Complaint {
         this.resolutionNote = resolutionNote;
     }
 }
+
