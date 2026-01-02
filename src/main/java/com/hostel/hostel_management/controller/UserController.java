@@ -1,5 +1,6 @@
 package com.hostel.hostel_management.controller;
 
+import com.hostel.hostel_management.config.AuthUtil;
 import com.hostel.hostel_management.dto.BookingResponse;
 import com.hostel.hostel_management.dto.ComplaintRequest;
 import com.hostel.hostel_management.dto.ComplaintResponse;
@@ -17,29 +18,47 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final AuthUtil authUtil;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthUtil authUtil) {
         this.userService = userService;
+        this.authUtil = authUtil;
     }
 
+    //USER: View available rooms
     @GetMapping("/rooms")
-    public ResponseEntity<List<RoomResponse>> getAvailableRoom(){
+    public ResponseEntity<List<RoomResponse>> getAvailableRoom() {
         return ResponseEntity.ok(userService.listAvailableRoom());
     }
 
-    @GetMapping("/{userId}/bookings")
-    public ResponseEntity<List<BookingResponse>> getUserBookings(@PathVariable Long userId){
-        return ResponseEntity.ok(userService.userBooking(userId));
+    //USER: My bookings
+    @GetMapping("/bookings")
+    public ResponseEntity<List<BookingResponse>> getUserBookings() {
+
+        Long userId = authUtil.getLoggedInUserId();
+        return ResponseEntity.ok(
+                userService.userBooking(userId)
+        );
     }
 
-    @PostMapping("/{userId}/complaints")
+    //USER: Raise complaint
+    @PostMapping("/complaints")
     public ResponseEntity<ComplaintResponse> createComplaint(
-            @PathVariable Long userId,
-            @RequestBody ComplaintRequest request){
-        return ResponseEntity.ok(userService.createComplaint(userId,request));
+            @RequestBody ComplaintRequest request) {
+
+        Long userId = authUtil.getLoggedInUserId();
+        return ResponseEntity.ok(
+                userService.createComplaint(userId, request)
+        );
     }
-    @GetMapping("/{userId}/complaints")
-    public ResponseEntity<List<ComplaintResponse>> getUserComplaints(@PathVariable Long userId){
-        return ResponseEntity.ok(userService.getUserComplaint(userId));
+
+    //USER: My complaints
+    @GetMapping("/complaints")
+    public ResponseEntity<List<ComplaintResponse>> getUserComplaints() {
+
+        Long userId = authUtil.getLoggedInUserId();
+        return ResponseEntity.ok(
+                userService.getUserComplaint(userId)
+        );
     }
 }

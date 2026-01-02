@@ -1,5 +1,9 @@
-package com.hostel.hostel_management.dashboard;
+package com.hostel.hostel_management.controller;
 
+import com.hostel.hostel_management.config.AuthUtil;
+import com.hostel.hostel_management.dto.AdminDashboardResponse;
+import com.hostel.hostel_management.service.DashboardService;
+import com.hostel.hostel_management.dto.UserDashboardResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,15 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class DashboardController {
 
     private final DashboardService dashboardService;
+    private final AuthUtil authUtil;
 
-    public DashboardController(DashboardService dashboardService) {
+    public DashboardController(DashboardService dashboardService, AuthUtil authUtil) {
         this.dashboardService = dashboardService;
+        this.authUtil = authUtil;
     }
 
     // USER DASHBOARD
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<UserDashboardResponse> userDashboard(
-            @PathVariable Long userId) {
+    @GetMapping("/user")
+    public ResponseEntity<UserDashboardResponse> userDashboard() {
+        Long userId = authUtil.getLoggedInUserId();
         return ResponseEntity.ok(dashboardService.getUserDashboard(userId));
     }
 

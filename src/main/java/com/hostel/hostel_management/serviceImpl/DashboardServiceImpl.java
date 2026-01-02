@@ -1,7 +1,9 @@
-package com.hostel.hostel_management.dashboard;
+package com.hostel.hostel_management.serviceImpl;
 
 import com.hostel.hostel_management.dashboard.dto.ChartDataResponse;
 import com.hostel.hostel_management.dashboard.dto.UnpaidRentResponse;
+import com.hostel.hostel_management.dto.AdminDashboardResponse;
+import com.hostel.hostel_management.dto.UserDashboardResponse;
 import com.hostel.hostel_management.entity.Booking;
 import com.hostel.hostel_management.entity.User;
 import com.hostel.hostel_management.enums.PaymentStatus;
@@ -10,6 +12,7 @@ import com.hostel.hostel_management.repository.BookingRepository;
 import com.hostel.hostel_management.repository.ComplaintRepository;
 import com.hostel.hostel_management.repository.RoomRepository;
 import com.hostel.hostel_management.repository.UserRepository;
+import com.hostel.hostel_management.service.DashboardService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,7 +20,7 @@ import java.util.List;
 
 
 @Service
-public class DashboardServiceImpl implements DashboardService{
+public class DashboardServiceImpl implements DashboardService {
 
     private final UserRepository userRepo;
     private final RoomRepository roomRepo;

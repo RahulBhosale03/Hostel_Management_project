@@ -1,7 +1,6 @@
 package com.hostel.hostel_management.serviceImpl;
 
 import com.hostel.hostel_management.config.JwtUtil;
-import com.hostel.hostel_management.config.UserDetailsServiceImpl;
 import com.hostel.hostel_management.dto.LoginRequest;
 import com.hostel.hostel_management.dto.RegisterRequest;
 import com.hostel.hostel_management.dto.UserResponse;
@@ -14,33 +13,32 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-//import com.hostel.hostel_management.config.JwtUtil;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-
 
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService;
 
-    public AuthServiceImpl(UserRepository userRepo, PasswordEncoder passwordEncoder,
-                           AuthenticationManager authenticationManager,
-                           JwtUtil jwtUtil,
-                           UserDetailsServiceImpl userDetailsService) {
+    public AuthServiceImpl(
+            UserRepository userRepo,
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil
+    ) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
     }
 
+    // ✅ REGISTER (NO CHANGE)
     @Override
     public UserResponse register(RegisterRequest request) {
 
-        if(userRepo.existsByEmail(request.getEmail())){
+        if (userRepo.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exist");
         }
 
@@ -51,22 +49,40 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(RoleType.USER);
 
         User saved = userRepo.save(user);
-        return new UserResponse(saved.getId(), saved.getName(),
-                saved.getEmail(), saved.getRole());
+
+        return new UserResponse(
+                saved.getId(),
+                saved.getName(),
+                saved.getEmail(),
+                saved.getRole()
+        );
     }
 
+    // ✅ LOGIN (FIXED)
     @Override
     public String login(LoginRequest request) {
 
-        Authentication auth  = authenticationManager.authenticate(
+        // 1️⃣ Authenticate user
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),request.getPassword()
+                        request.getEmail(),
+                        request.getPassword()
                 )
         );
 
-        if(!auth.isAuthenticated()){
+        if (!authentication.isAuthenticated()) {
             throw new RuntimeException("Invalid Credentials");
         }
-        return jwtUtil.generateToken(auth.getName());
+
+        // 2️⃣ Fetch user from DB
+        User user = userRepo.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 3️⃣ Generate JWT with userId + role
+        return jwtUtil.generateToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole().name()
+        );
     }
 }

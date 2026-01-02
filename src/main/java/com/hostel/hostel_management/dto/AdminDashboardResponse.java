@@ -1,4 +1,4 @@
-package com.hostel.hostel_management.dashboard;
+package com.hostel.hostel_management.dto;
 
 public class AdminDashboardResponse {
     private long totalUsers;

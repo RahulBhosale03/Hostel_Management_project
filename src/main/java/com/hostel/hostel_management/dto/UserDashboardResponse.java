@@ -1,4 +1,4 @@
-package com.hostel.hostel_management.dashboard;
+package com.hostel.hostel_management.dto;
 
 import com.hostel.hostel_management.enums.PaymentStatus;
 

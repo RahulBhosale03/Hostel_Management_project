@@ -6,7 +6,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,25 +29,26 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception{
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder builder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
 
-            builder.userDetailsService(userDetailsService)
-                    .passwordEncoder(passwordEncoder());
+        builder.userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
 
-            return builder.build();
+        return builder.build();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000")); // React URL
-        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
@@ -58,21 +58,41 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-                        .anyRequest().authenticated()
-                )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);;
+                .authorizeHttpRequests(auth -> auth
+
+                        // 🔓 PUBLIC
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // 👤 USER + ADMIN
+                        .requestMatchers(
+                                "/api/user/**",
+                                "/api/bookings/**",
+                                "/api/payment/**",
+                                "/api/dashboard/user"
+                        ).hasAnyRole("USER", "ADMIN")
+
+                        // 👑 ADMIN ONLY
+                        .requestMatchers(
+                                "/api/admin/**",
+                                "/api/dashboard/admin/**"
+                        ).hasRole("ADMIN")
+
+                        // 🔐 ANY OTHER
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(
+                        jwtFilter,
+                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class
+                );
+
         return http.build();
     }
 }

@@ -1,5 +1,6 @@
 package com.hostel.hostel_management.controller;
 
+import com.hostel.hostel_management.config.AuthUtil;
 import com.hostel.hostel_management.dto.PaymentRequest;
 import com.hostel.hostel_management.dto.PaymentResponse;
 import com.hostel.hostel_management.service.PaymentService;
@@ -12,20 +13,32 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final AuthUtil authUtil;
 
-    public PaymentController(PaymentService paymentService) {
+    public PaymentController(PaymentService paymentService, AuthUtil authUtil) {
         this.paymentService = paymentService;
+        this.authUtil = authUtil;
     }
 
-    @PostMapping("/{userId}")
+    //USER: Make payment (JWT based)
+    @PostMapping
     public ResponseEntity<PaymentResponse> makePayment(
-            @PathVariable Long userId,
-            @RequestBody PaymentRequest request){
-        return ResponseEntity.ok(paymentService.makePayment(userId,request));
+            @RequestBody PaymentRequest request) {
+
+        Long userId = authUtil.getLoggedInUserId();
+
+        return ResponseEntity.ok(
+                paymentService.makePayment(userId, request)
+        );
     }
 
+    //USER / ADMIN: Get payment by ID
     @GetMapping("/{paymentId}")
-    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable Long paymentId){
-        return ResponseEntity.ok(paymentService.getPaymentIById(paymentId));
+    public ResponseEntity<PaymentResponse> getPaymentById(
+            @PathVariable Long paymentId) {
+
+        return ResponseEntity.ok(
+                paymentService.getPaymentIById(paymentId)
+        );
     }
 }

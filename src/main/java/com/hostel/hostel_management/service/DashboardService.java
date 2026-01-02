@@ -1,5 +1,7 @@
-package com.hostel.hostel_management.dashboard;
+package com.hostel.hostel_management.service;
 
+import com.hostel.hostel_management.dto.AdminDashboardResponse;
+import com.hostel.hostel_management.dto.UserDashboardResponse;
 import com.hostel.hostel_management.dashboard.dto.ChartDataResponse;
 import com.hostel.hostel_management.dashboard.dto.UnpaidRentResponse;
 
